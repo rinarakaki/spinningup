@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install MPI and other dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libopenmpi-dev
+
+      - uses: astral-sh/setup-uv@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - run: uv sync --all-extras --dev
+
+      - run: uv run ruff check .
+
+  test:
+    name: Test Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install MPI and other dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y libopenmpi-dev
+
+    - uses: astral-sh/setup-uv@v5
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Setup MuJoCo (if needed)
+      run: |
+        mkdir -p $HOME/.mujoco
+        # Uncomment and update below if MuJoCo is required for tests
+        # wget https://github.com/deepmind/mujoco/releases/download/2.1.0/mujoco210-linux-x86_64.tar.gz
+        # tar -xf mujoco210-linux-x86_64.tar.gz -C $HOME/.mujoco/
+        # echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/.mujoco/mujoco210/bin" >> $GITHUB_ENV
+
+    - run: uv sync --all-extras --dev
+
+    - run: uv run pytest test/ -v
