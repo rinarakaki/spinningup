@@ -18,7 +18,6 @@ dependencies = [
   "mpi4py",
   "numpy",
   "pandas",
-  "pytest",
   "psutil",
   "scipy",
   "seaborn",
@@ -27,6 +26,12 @@ dependencies = [
   "tqdm",
 ]
 dynamic = ["version"]
+
+[dependency-groups]
+dev = [
+  "pytest",
+  "ruff",
+]
 
 [tool.setuptools]
 py-modules = ["spinup"]
