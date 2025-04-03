@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spinup"
+authors = [{ name = "Joshua Achiam" }]
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+readme = "readme.md"
+description = "Teaching tools for introducing people to deep RL."
+dependencies = [
+  "cloudpickle == 1.2.1",
+  "gym[atari,box2d,classic_control] ~= 0.15.3",
+  "ipython",
+  "joblib",
+  "matplotlib",
+  "mpi4py",
+  "numpy",
+  "pandas",
+  "pytest",
+  "psutil",
+  "scipy",
+  "seaborn",
+  "tensorflow",
+  "torch",
+  "tqdm",
+]
+dynamic = ["version"]
+
+[tool.setuptools]
+py-modules = ["spinup"]
+
+[tool.setuptools.dynamic]
+version = { attr = "spinup.version.__version__" }
