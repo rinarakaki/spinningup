@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from mpi4py import MPI
+
 from spinup.utils.mpi_tools import broadcast
 
 
@@ -9,9 +10,7 @@ def flat_concat(xs):
 
 
 def assign_params_from_flat(x, params):
-    flat_size = lambda p: int(
-        np.prod(p.shape.as_list())
-    )  # the 'int' is important for scalars
+    flat_size = lambda p: int(np.prod(p.shape.as_list()))  # the 'int' is important for scalars
     splits = tf.split(x, [flat_size(p) for p in params])
     new_params = [tf.reshape(p_new, p.shape) for p, p_new in zip(params, splits)]
     return tf.group([tf.assign(p, p_new) for p, p_new in zip(params, new_params)])
@@ -70,9 +69,7 @@ class MpiAdamOptimizer(tf.train.AdamOptimizer):
         avg_flat_grad = tf.py_func(_collect_grads, [flat_grad], tf.float32)
         avg_flat_grad.set_shape(flat_grad.shape)
         avg_grads = tf.split(avg_flat_grad, sizes, axis=0)
-        avg_grads_and_vars = [
-            (tf.reshape(g, v.shape), v) for g, (_, v) in zip(avg_grads, grads_and_vars)
-        ]
+        avg_grads_and_vars = [(tf.reshape(g, v.shape), v) for g, (_, v) in zip(avg_grads, grads_and_vars)]
 
         return avg_grads_and_vars
 

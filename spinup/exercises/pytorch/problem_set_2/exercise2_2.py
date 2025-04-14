@@ -1,8 +1,9 @@
-from spinup.algos.pytorch.ddpg.core import mlp, MLPActorCritic
-from spinup.utils.run_utils import ExperimentGrid
-from spinup import ddpg_pytorch as ddpg
 import torch
 import torch.nn as nn
+
+from spinup import ddpg_pytorch as ddpg
+from spinup.algos.pytorch.ddpg.core import MLPActorCritic, mlp
+from spinup.utils.run_utils import ExperimentGrid
 
 """
 

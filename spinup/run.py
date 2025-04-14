@@ -1,13 +1,14 @@
-from spinup.user_config import DEFAULT_BACKEND
-from spinup.utils.run_utils import ExperimentGrid
-import gym
 import os
+import os.path as osp
 import subprocess
 import sys
-import os.path as osp
 from copy import deepcopy
 from textwrap import dedent
 
+import gym
+
+from spinup.user_config import DEFAULT_BACKEND
+from spinup.utils.run_utils import ExperimentGrid
 
 # Command line args that will go to ExperimentGrid.run, and must possess unique
 # values (therefore must be treated separately).
@@ -126,18 +127,14 @@ def parse_and_execute_grid_search(cmd, args):
     for k in RUN_KEYS:
         if k in arg_dict:
             val = arg_dict[k]
-            assert len(val) == 1, friendly_err(
-                "You can only provide one value for %s." % k
-            )
+            assert len(val) == 1, friendly_err("You can only provide one value for %s." % k)
             run_kwargs[k] = val[0]
             del arg_dict[k]
 
     # Determine experiment name. If not given by user, will be determined
     # by the algorithm name.
     if "exp_name" in arg_dict:
-        assert len(arg_dict["exp_name"]) == 1, friendly_err(
-            "You can only provide one value for exp_name."
-        )
+        assert len(arg_dict["exp_name"]) == 1, friendly_err("You can only provide one value for exp_name.")
         exp_name = arg_dict["exp_name"][0]
         del arg_dict["exp_name"]
     else:
@@ -153,9 +150,7 @@ def parse_and_execute_grid_search(cmd, args):
     # Special handling for environment: make sure that env_name is a real,
     # registered gym environment.
     valid_envs = [e.id for e in list(gym.envs.registry.all())]
-    assert "env_name" in arg_dict, friendly_err(
-        "You did not give a value for --env_name! Add one and try again."
-    )
+    assert "env_name" in arg_dict, friendly_err("You did not give a value for --env_name! Add one and try again.")
     for env_name in arg_dict["env_name"]:
         err_msg = dedent(
             """
@@ -199,9 +194,7 @@ if __name__ == "__main__":
     valid_utils = ["plot", "test_policy"]
     valid_help = ["--help", "-h", "help"]
     valid_cmds = valid_algos + valid_utils + valid_help
-    assert cmd in valid_cmds, (
-        "Select an algorithm or utility which is implemented in Spinning Up."
-    )
+    assert cmd in valid_cmds, "Select an algorithm or utility which is implemented in Spinning Up."
 
     if cmd in valid_help:
         # Before all else, check to see if any of the flags is 'help'.
@@ -221,10 +214,7 @@ if __name__ == "__main__":
         print(help_msg)
 
         # Provide some useful details for algorithm running.
-        subs_list = [
-            "--" + k.ljust(10) + "for".ljust(10) + "--" + v
-            for k, v in SUBSTITUTIONS.items()
-        ]
+        subs_list = ["--" + k.ljust(10) + "for".ljust(10) + "--" + v for k, v in SUBSTITUTIONS.items()]
         str_valid_subs = "\n\t" + "\n\t".join(subs_list)
         special_info = (
             dedent("""

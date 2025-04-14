@@ -1,6 +1,6 @@
 import numpy as np
-import tensorflow as tf
 import scipy.signal
+import tensorflow as tf
 from gym.spaces import Box, Discrete
 
 EPS = 1e-8
@@ -48,9 +48,7 @@ def count_vars(scope=""):
 
 
 def gaussian_likelihood(x, mu, log_std):
-    pre_sum = -0.5 * (
-        ((x - mu) / (tf.exp(log_std) + EPS)) ** 2 + 2 * log_std + np.log(2 * np.pi)
-    )
+    pre_sum = -0.5 * (((x - mu) / (tf.exp(log_std) + EPS)) ** 2 + 2 * log_std + np.log(2 * np.pi))
     return tf.reduce_sum(pre_sum, axis=1)
 
 
@@ -77,9 +75,7 @@ Policies
 """
 
 
-def mlp_categorical_policy(
-    x, a, hidden_sizes, activation, output_activation, action_space
-):
+def mlp_categorical_policy(x, a, hidden_sizes, activation, output_activation, action_space):
     act_dim = action_space.n
     logits = mlp(x, list(hidden_sizes) + [act_dim], activation, None)
     logp_all = tf.nn.log_softmax(logits)
@@ -89,14 +85,10 @@ def mlp_categorical_policy(
     return pi, logp, logp_pi
 
 
-def mlp_gaussian_policy(
-    x, a, hidden_sizes, activation, output_activation, action_space
-):
+def mlp_gaussian_policy(x, a, hidden_sizes, activation, output_activation, action_space):
     act_dim = a.shape.as_list()[-1]
     mu = mlp(x, list(hidden_sizes) + [act_dim], activation, output_activation)
-    log_std = tf.get_variable(
-        name="log_std", initializer=-0.5 * np.ones(act_dim, dtype=np.float32)
-    )
+    log_std = tf.get_variable(name="log_std", initializer=-0.5 * np.ones(act_dim, dtype=np.float32))
     std = tf.exp(log_std)
     pi = mu + tf.random_normal(tf.shape(mu)) * std
     logp = gaussian_likelihood(a, mu, log_std)
@@ -125,9 +117,7 @@ def mlp_actor_critic(
         policy = mlp_categorical_policy
 
     with tf.variable_scope("pi"):
-        pi, logp, logp_pi = policy(
-            x, a, hidden_sizes, activation, output_activation, action_space
-        )
+        pi, logp, logp_pi = policy(x, a, hidden_sizes, activation, output_activation, action_space)
     with tf.variable_scope("v"):
         v = tf.squeeze(mlp(x, list(hidden_sizes) + [1], activation, None), axis=1)
     return pi, logp, logp_pi, v

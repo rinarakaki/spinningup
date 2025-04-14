@@ -1,7 +1,9 @@
+import time
+
+import gym
 import numpy as np
 import tensorflow as tf
-import gym
-import time
+
 from spinup.algos.tf1.td3 import core
 from spinup.algos.tf1.td3.core import get_vars
 from spinup.utils.logx import EpochLogger
@@ -176,9 +178,7 @@ def td3(
     ac_kwargs["action_space"] = env.action_space
 
     # Inputs to computation graph
-    x_ph, a_ph, x2_ph, r_ph, d_ph = core.placeholders(
-        obs_dim, act_dim, obs_dim, None, None
-    )
+    x_ph, a_ph, x2_ph, r_ph, d_ph = core.placeholders(obs_dim, act_dim, obs_dim, None, None)
 
     # Main outputs from computation graph
     with tf.variable_scope("main"):
@@ -203,13 +203,8 @@ def td3(
     replay_buffer = ReplayBuffer(obs_dim=obs_dim, act_dim=act_dim, size=replay_size)
 
     # Count variables
-    var_counts = tuple(
-        core.count_vars(scope) for scope in ["main/pi", "main/q1", "main/q2", "main"]
-    )
-    print(
-        "\nNumber of parameters: \t pi: %d, \t q1: %d, \t q2: %d, \t total: %d\n"
-        % var_counts
-    )
+    var_counts = tuple(core.count_vars(scope) for scope in ["main/pi", "main/q1", "main/q2", "main"])
+    print("\nNumber of parameters: \t pi: %d, \t q1: %d, \t q2: %d, \t total: %d\n" % var_counts)
 
     # Bellman backup for Q functions, using Clipped Double-Q targets
     min_q_targ = tf.minimum(q1_targ, q2_targ)
@@ -236,21 +231,14 @@ def td3(
     )
 
     # Initializing targets to match main variables
-    target_init = tf.group(
-        [
-            tf.assign(v_targ, v_main)
-            for v_main, v_targ in zip(get_vars("main"), get_vars("target"))
-        ]
-    )
+    target_init = tf.group([tf.assign(v_targ, v_main) for v_main, v_targ in zip(get_vars("main"), get_vars("target"))])
 
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
     sess.run(target_init)
 
     # Setup model saving
-    logger.setup_tf_saver(
-        sess, inputs={"x": x_ph, "a": a_ph}, outputs={"pi": pi, "q1": q1, "q2": q2}
-    )
+    logger.setup_tf_saver(sess, inputs={"x": x_ph, "a": a_ph}, outputs={"pi": pi, "q1": q1, "q2": q2})
 
     def get_action(o, noise_scale):
         a = sess.run(pi, feed_dict={x_ph: o.reshape(1, -1)})[0]

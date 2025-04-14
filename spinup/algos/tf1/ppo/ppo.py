@@ -1,16 +1,18 @@
+import time
+
+import gym
 import numpy as np
 import tensorflow as tf
-import gym
-import time
+
 import spinup.algos.tf1.ppo.core as core
 from spinup.utils.logx import EpochLogger
 from spinup.utils.mpi_tf import MpiAdamOptimizer, sync_all_params
 from spinup.utils.mpi_tools import (
-    mpi_fork,
     mpi_avg,
-    proc_id,
+    mpi_fork,
     mpi_statistics_scalar,
     num_procs,
+    proc_id,
 )
 
 
@@ -106,7 +108,7 @@ def ppo(
     logger_kwargs=dict(),
     save_freq=10,
 ):
-    """
+    r"""
     Proximal Policy Optimization (by clipping),
 
     with early stopping based on approximate KL
@@ -224,12 +226,8 @@ def ppo(
     v_loss = tf.reduce_mean((ret_ph - v) ** 2)
 
     # Info (useful to watch during learning)
-    approx_kl = tf.reduce_mean(
-        logp_old_ph - logp
-    )  # a sample estimate for KL-divergence, easy to compute
-    approx_ent = tf.reduce_mean(
-        -logp
-    )  # a sample estimate for entropy, also easy to compute
+    approx_kl = tf.reduce_mean(logp_old_ph - logp)  # a sample estimate for KL-divergence, easy to compute
+    approx_ent = tf.reduce_mean(-logp)  # a sample estimate for entropy, also easy to compute
     clipped = tf.logical_or(ratio > (1 + clip_ratio), ratio < (1 - clip_ratio))
     clipfrac = tf.reduce_mean(tf.cast(clipped, tf.float32))
 
@@ -248,9 +246,7 @@ def ppo(
 
     def update():
         inputs = {k: v for k, v in zip(all_phs, buf.get())}
-        pi_l_old, v_l_old, ent = sess.run(
-            [pi_loss, v_loss, approx_ent], feed_dict=inputs
-        )
+        pi_l_old, v_l_old, ent = sess.run([pi_loss, v_loss, approx_ent], feed_dict=inputs)
 
         # Training
         for i in range(train_pi_iters):
@@ -264,9 +260,7 @@ def ppo(
             sess.run(train_v, feed_dict=inputs)
 
         # Log changes from update
-        pi_l_new, v_l_new, kl, cf = sess.run(
-            [pi_loss, v_loss, approx_kl, clipfrac], feed_dict=inputs
-        )
+        pi_l_new, v_l_new, kl, cf = sess.run([pi_loss, v_loss, approx_kl, clipfrac], feed_dict=inputs)
         logger.store(
             LossPi=pi_l_old,
             LossV=v_l_old,
@@ -283,9 +277,7 @@ def ppo(
     # Main loop: collect experience in env and update/log each epoch
     for epoch in range(epochs):
         for t in range(local_steps_per_epoch):
-            a, v_t, logp_t = sess.run(
-                get_action_ops, feed_dict={x_ph: o.reshape(1, -1)}
-            )
+            a, v_t, logp_t = sess.run(get_action_ops, feed_dict={x_ph: o.reshape(1, -1)})
 
             o2, r, d, _ = env.step(a[0])
             ep_ret += r

@@ -1,7 +1,7 @@
-import tensorflow as tf
-import numpy as np
 import gym
-from gym.spaces import Discrete, Box
+import numpy as np
+import tensorflow as tf
+from gym.spaces import Box, Discrete
 
 
 def mlp(x, sizes, activation=tf.tanh, output_activation=None):
@@ -21,12 +21,8 @@ def train(
 ):
     # make environment, check spaces, get obs / act dims
     env = gym.make(env_name)
-    assert isinstance(env.observation_space, Box), (
-        "This example only works for envs with continuous state spaces."
-    )
-    assert isinstance(env.action_space, Discrete), (
-        "This example only works for envs with discrete action spaces."
-    )
+    assert isinstance(env.observation_space, Box), "This example only works for envs with continuous state spaces."
+    assert isinstance(env.action_space, Discrete), "This example only works for envs with discrete action spaces."
 
     obs_dim = env.observation_space.shape[0]
     n_acts = env.action_space.n

@@ -1,7 +1,9 @@
+import time
+
+import gym
 import numpy as np
 import tensorflow as tf
-import gym
-import time
+
 from spinup.algos.tf1.ddpg import core
 from spinup.algos.tf1.ddpg.core import get_vars
 from spinup.utils.logx import EpochLogger
@@ -161,9 +163,7 @@ def ddpg(
     ac_kwargs["action_space"] = env.action_space
 
     # Inputs to computation graph
-    x_ph, a_ph, x2_ph, r_ph, d_ph = core.placeholders(
-        obs_dim, act_dim, obs_dim, None, None
-    )
+    x_ph, a_ph, x2_ph, r_ph, d_ph = core.placeholders(obs_dim, act_dim, obs_dim, None, None)
 
     # Main outputs from computation graph
     with tf.variable_scope("main"):
@@ -179,9 +179,7 @@ def ddpg(
     replay_buffer = ReplayBuffer(obs_dim=obs_dim, act_dim=act_dim, size=replay_size)
 
     # Count variables
-    var_counts = tuple(
-        core.count_vars(scope) for scope in ["main/pi", "main/q", "main"]
-    )
+    var_counts = tuple(core.count_vars(scope) for scope in ["main/pi", "main/q", "main"])
     print("\nNumber of parameters: \t pi: %d, \t q: %d, \t total: %d\n" % var_counts)
 
     # Bellman backup for Q function
@@ -206,21 +204,14 @@ def ddpg(
     )
 
     # Initializing targets to match main variables
-    target_init = tf.group(
-        [
-            tf.assign(v_targ, v_main)
-            for v_main, v_targ in zip(get_vars("main"), get_vars("target"))
-        ]
-    )
+    target_init = tf.group([tf.assign(v_targ, v_main) for v_main, v_targ in zip(get_vars("main"), get_vars("target"))])
 
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
     sess.run(target_init)
 
     # Setup model saving
-    logger.setup_tf_saver(
-        sess, inputs={"x": x_ph, "a": a_ph}, outputs={"pi": pi, "q": q}
-    )
+    logger.setup_tf_saver(sess, inputs={"x": x_ph, "a": a_ph}, outputs={"pi": pi, "q": q})
 
     def get_action(o, noise_scale):
         a = sess.run(pi, feed_dict={x_ph: o.reshape(1, -1)})[0]

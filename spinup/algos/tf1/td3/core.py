@@ -41,9 +41,7 @@ def mlp_actor_critic(
     act_dim = a.shape.as_list()[-1]
     act_limit = action_space.high[0]
     with tf.variable_scope("pi"):
-        pi = act_limit * mlp(
-            x, list(hidden_sizes) + [act_dim], activation, output_activation
-        )
+        pi = act_limit * mlp(x, list(hidden_sizes) + [act_dim], activation, output_activation)
     with tf.variable_scope("q1"):
         q1 = tf.squeeze(
             mlp(tf.concat([x, a], axis=-1), list(hidden_sizes) + [1], activation, None),
@@ -56,9 +54,7 @@ def mlp_actor_critic(
         )
     with tf.variable_scope("q1", reuse=True):
         q1_pi = tf.squeeze(
-            mlp(
-                tf.concat([x, pi], axis=-1), list(hidden_sizes) + [1], activation, None
-            ),
+            mlp(tf.concat([x, pi], axis=-1), list(hidden_sizes) + [1], activation, None),
             axis=1,
         )
     return pi, q1, q2, q1_pi

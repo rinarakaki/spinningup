@@ -1,17 +1,19 @@
+import time
+
+import gym
 import numpy as np
 import torch
 from torch.optim import Adam
-import gym
-import time
+
 import spinup.algos.pytorch.ppo.core as core
 from spinup.utils.logx import EpochLogger
-from spinup.utils.mpi_pytorch import setup_pytorch_for_mpi, sync_params, mpi_avg_grads
+from spinup.utils.mpi_pytorch import mpi_avg_grads, setup_pytorch_for_mpi, sync_params
 from spinup.utils.mpi_tools import (
-    mpi_fork,
     mpi_avg,
-    proc_id,
+    mpi_fork,
     mpi_statistics_scalar,
     num_procs,
+    proc_id,
 )
 
 
@@ -114,7 +116,7 @@ def ppo(
     logger_kwargs=dict(),
     save_freq=10,
 ):
-    """
+    r"""
     Proximal Policy Optimization (by clipping),
 
     with early stopping based on approximate KL

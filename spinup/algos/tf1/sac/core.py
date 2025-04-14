@@ -28,9 +28,7 @@ def count_vars(scope):
 
 
 def gaussian_likelihood(x, mu, log_std):
-    pre_sum = -0.5 * (
-        ((x - mu) / (tf.exp(log_std) + EPS)) ** 2 + 2 * log_std + np.log(2 * np.pi)
-    )
+    pre_sum = -0.5 * (((x - mu) / (tf.exp(log_std) + EPS)) ** 2 + 2 * log_std + np.log(2 * np.pi))
     return tf.reduce_sum(pre_sum, axis=1)
 
 
@@ -94,9 +92,7 @@ def mlp_actor_critic(
     pi *= action_scale
 
     # vfs
-    vf_mlp = lambda x: tf.squeeze(
-        mlp(x, list(hidden_sizes) + [1], activation, None), axis=1
-    )
+    vf_mlp = lambda x: tf.squeeze(mlp(x, list(hidden_sizes) + [1], activation, None), axis=1)
     with tf.variable_scope("q1"):
         q1 = vf_mlp(tf.concat([x, a], axis=-1))
     with tf.variable_scope("q2"):

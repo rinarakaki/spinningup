@@ -1,7 +1,8 @@
+import tensorflow as tf
+
+from spinup import ddpg_tf1 as ddpg
 from spinup.algos.tf1.ddpg.core import mlp, mlp_actor_critic
 from spinup.utils.run_utils import ExperimentGrid
-from spinup import ddpg_tf1 as ddpg
-import tensorflow as tf
 
 """
 
@@ -31,15 +32,11 @@ def bugged_mlp_actor_critic(
     act_dim = a.shape.as_list()[-1]
     act_limit = action_space.high[0]
     with tf.variable_scope("pi"):
-        pi = act_limit * mlp(
-            x, list(hidden_sizes) + [act_dim], activation, output_activation
-        )
+        pi = act_limit * mlp(x, list(hidden_sizes) + [act_dim], activation, output_activation)
     with tf.variable_scope("q"):
         q = mlp(tf.concat([x, a], axis=-1), list(hidden_sizes) + [1], activation, None)
     with tf.variable_scope("q", reuse=True):
-        q_pi = mlp(
-            tf.concat([x, pi], axis=-1), list(hidden_sizes) + [1], activation, None
-        )
+        q_pi = mlp(tf.concat([x, pi], axis=-1), list(hidden_sizes) + [1], activation, None)
     return pi, q, q_pi
 
 

@@ -1,6 +1,8 @@
+import time
+
 import numpy as np
 import tensorflow as tf
-import time
+
 from spinup.utils.logx import EpochLogger
 
 
@@ -30,9 +32,7 @@ def train_mnist(
     # Define inputs & main outputs from computation graph
     x_ph = tf.placeholder(tf.float32, shape=(None, 28 * 28))
     y_ph = tf.placeholder(tf.int32, shape=(None,))
-    logits = mlp(
-        x_ph, hidden_sizes=[hidden_size] * layers + [10], activation=tf.nn.relu
-    )
+    logits = mlp(x_ph, hidden_sizes=[hidden_size] * layers + [10], activation=tf.nn.relu)
     predict = tf.argmax(logits, axis=1, output_type=tf.int32)
 
     # Define loss function, accuracy, and training op
@@ -46,9 +46,7 @@ def train_mnist(
     sess.run(tf.global_variables_initializer())
 
     # Setup model saving
-    logger.setup_tf_saver(
-        sess, inputs={"x": x_ph}, outputs={"logits": logits, "predict": predict}
-    )
+    logger.setup_tf_saver(sess, inputs={"x": x_ph}, outputs={"logits": logits, "predict": predict})
 
     start_time = time.time()
 

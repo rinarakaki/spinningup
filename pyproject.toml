@@ -38,3 +38,10 @@ py-modules = ["spinup"]
 
 [tool.setuptools.dynamic]
 version = { attr = "spinup.version.__version__" }
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+extend-select = ["E", "F", "W", "A", "PLC", "PLE", "PLW", "I"]
+ignore = ["A001", "A002", "E402", "E722", "E731", "F401", "F821", "F841", "PLW0602", "PLW0603", "PLW3301"]
