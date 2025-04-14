@@ -149,7 +149,7 @@ def ddpg(
     logger = EpochLogger(**logger_kwargs)
     logger.save_config(locals())
 
-    tf.set_random_seed(seed)
+    tf.compat.v1.set_random_seed(seed)
     np.random.seed(seed)
 
     env, test_env = env_fn(), env_fn()
@@ -166,11 +166,11 @@ def ddpg(
     x_ph, a_ph, x2_ph, r_ph, d_ph = core.placeholders(obs_dim, act_dim, obs_dim, None, None)
 
     # Main outputs from computation graph
-    with tf.variable_scope("main"):
+    with tf.compat.v1.variable_scope("main"):
         pi, q, q_pi = actor_critic(x_ph, a_ph, **ac_kwargs)
 
     # Target networks
-    with tf.variable_scope("target"):
+    with tf.compat.v1.variable_scope("target"):
         # Note that the action placeholder going to actor_critic here is
         # irrelevant, because we only need q_targ(s, pi_targ(s)).
         pi_targ, _, q_pi_targ = actor_critic(x2_ph, a_ph, **ac_kwargs)
@@ -190,8 +190,8 @@ def ddpg(
     q_loss = tf.reduce_mean((q - backup) ** 2)
 
     # Separate train ops for pi, q
-    pi_optimizer = tf.train.AdamOptimizer(learning_rate=pi_lr)
-    q_optimizer = tf.train.AdamOptimizer(learning_rate=q_lr)
+    pi_optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=pi_lr)
+    q_optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=q_lr)
     train_pi_op = pi_optimizer.minimize(pi_loss, var_list=get_vars("main/pi"))
     train_q_op = q_optimizer.minimize(q_loss, var_list=get_vars("main/q"))
 

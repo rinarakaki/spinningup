@@ -180,7 +180,7 @@ def td3(
     logger = EpochLogger(**logger_kwargs)
     logger.save_config(locals())
 
-    tf.set_random_seed(seed)
+    tf.compat.v1.set_random_seed(seed)
     np.random.seed(seed)
 
     env, test_env = env_fn(), env_fn()
@@ -203,7 +203,7 @@ def td3(
     # =========================================================================#
 
     # Main outputs from computation graph
-    with tf.variable_scope("main"):
+    with tf.compat.v1.variable_scope("main"):
         #######################
         #                     #
         #   YOUR CODE HERE    #
@@ -213,7 +213,7 @@ def td3(
         pass
 
     # Target policy network
-    with tf.variable_scope("target"):
+    with tf.compat.v1.variable_scope("target"):
         #######################
         #                     #
         #   YOUR CODE HERE    #
@@ -223,7 +223,7 @@ def td3(
         pass
 
     # Target Q networks
-    with tf.variable_scope("target", reuse=True):
+    with tf.compat.v1.variable_scope("target", reuse=True):
         # Target policy smoothing, by adding clipped noise to target actions
         #######################
         #                     #
@@ -271,8 +271,8 @@ def td3(
     # =========================================================================#
 
     # Separate train ops for pi, q
-    pi_optimizer = tf.train.AdamOptimizer(learning_rate=pi_lr)
-    q_optimizer = tf.train.AdamOptimizer(learning_rate=q_lr)
+    pi_optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=pi_lr)
+    q_optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=q_lr)
     train_pi_op = pi_optimizer.minimize(pi_loss, var_list=get_vars("main/pi"))
     train_q_op = q_optimizer.minimize(q_loss, var_list=get_vars("main/q"))
 

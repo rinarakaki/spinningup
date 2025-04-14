@@ -21,7 +21,7 @@ def values_as_sorted_list(dict):
 
 
 def placeholder(dim=None):
-    return tf.placeholder(dtype=tf.float32, shape=combined_shape(None, dim))
+    return tf.compat.v1.placeholder(dtype=tf.float32, shape=combined_shape(None, dim))
 
 
 def placeholders(*args):
@@ -32,7 +32,7 @@ def placeholder_from_space(space):
     if isinstance(space, Box):
         return placeholder(space.shape)
     elif isinstance(space, Discrete):
-        return tf.placeholder(dtype=tf.int32, shape=(None,))
+        return tf.compat.v1.placeholder(dtype=tf.int32, shape=(None,))
     raise NotImplementedError
 
 
@@ -42,12 +42,12 @@ def placeholders_from_spaces(*args):
 
 def mlp(x, hidden_sizes=(32,), activation=tf.tanh, output_activation=None):
     for h in hidden_sizes[:-1]:
-        x = tf.layers.dense(x, units=h, activation=activation)
-    return tf.layers.dense(x, units=hidden_sizes[-1], activation=output_activation)
+        x = tf.compat.v1.layers.dense(x, units=h, activation=activation)
+    return tf.compat.v1.layers.dense(x, units=hidden_sizes[-1], activation=output_activation)
 
 
 def get_vars(scope=""):
-    return [x for x in tf.trainable_variables() if scope in x.name]
+    return [x for x in tf.compat.v1.trainable_variables() if scope in x.name]
 
 
 def count_vars(scope=""):
@@ -92,7 +92,7 @@ def flat_grad(f, params):
 def hessian_vector_product(f, params):
     # for H = grad**2 f, compute Hx
     g = flat_grad(f, params)
-    x = tf.placeholder(tf.float32, shape=g.shape)
+    x = tf.compat.v1.placeholder(tf.float32, shape=g.shape)
     return x, flat_grad(tf.reduce_sum(g * x), params)
 
 
@@ -130,7 +130,7 @@ def mlp_categorical_policy(x, a, hidden_sizes, activation, output_activation, ac
     act_dim = action_space.n
     logits = mlp(x, list(hidden_sizes) + [act_dim], activation, None)
     logp_all = tf.nn.log_softmax(logits)
-    pi = tf.squeeze(tf.multinomial(logits, 1), axis=1)
+    pi = tf.squeeze(tf.compat.v1.multinomial(logits, 1), axis=1)
     logp = tf.reduce_sum(tf.one_hot(a, depth=act_dim) * logp_all, axis=1)
     logp_pi = tf.reduce_sum(tf.one_hot(pi, depth=act_dim) * logp_all, axis=1)
 
@@ -181,9 +181,9 @@ def mlp_actor_critic(
     elif policy is None and isinstance(action_space, Discrete):
         policy = mlp_categorical_policy
 
-    with tf.variable_scope("pi"):
+    with tf.compat.v1.variable_scope("pi"):
         policy_outs = policy(x, a, hidden_sizes, activation, output_activation, action_space)
         pi, logp, logp_pi, info, info_phs, d_kl = policy_outs
-    with tf.variable_scope("v"):
+    with tf.compat.v1.variable_scope("v"):
         v = tf.squeeze(mlp(x, list(hidden_sizes) + [1], activation, None), axis=1)
     return pi, logp, logp_pi, info, info_phs, d_kl, v

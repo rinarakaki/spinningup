@@ -153,7 +153,7 @@ def sac(
     logger = EpochLogger(**logger_kwargs)
     logger.save_config(locals())
 
-    tf.set_random_seed(seed)
+    tf.compat.v1.set_random_seed(seed)
     np.random.seed(seed)
 
     env, test_env = env_fn(), env_fn()
@@ -170,10 +170,10 @@ def sac(
     x_ph, a_ph, x2_ph, r_ph, d_ph = core.placeholders(obs_dim, act_dim, obs_dim, None, None)
 
     # Main outputs from computation graph
-    with tf.variable_scope("main"):
+    with tf.compat.v1.variable_scope("main"):
         mu, pi, logp_pi, q1, q2 = actor_critic(x_ph, a_ph, **ac_kwargs)
 
-    with tf.variable_scope("main", reuse=True):
+    with tf.compat.v1.variable_scope("main", reuse=True):
         # compose q with pi, for pi-learning
         _, _, _, q1_pi, q2_pi = actor_critic(x_ph, pi, **ac_kwargs)
 
@@ -181,7 +181,7 @@ def sac(
         _, pi_next, logp_pi_next, _, _ = actor_critic(x2_ph, a_ph, **ac_kwargs)
 
     # Target value network
-    with tf.variable_scope("target"):
+    with tf.compat.v1.variable_scope("target"):
         # target q values, using actions from *current* policy
         _, _, _, q1_targ, q2_targ = actor_critic(x2_ph, pi_next, **ac_kwargs)
 
@@ -207,12 +207,12 @@ def sac(
 
     # Policy train op
     # (has to be separate from value train op, because q1_pi appears in pi_loss)
-    pi_optimizer = tf.train.AdamOptimizer(learning_rate=lr)
+    pi_optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=lr)
     train_pi_op = pi_optimizer.minimize(pi_loss, var_list=get_vars("main/pi"))
 
     # Value train op
     # (control dep of train_pi_op because sess.run otherwise evaluates in nondeterministic order)
-    value_optimizer = tf.train.AdamOptimizer(learning_rate=lr)
+    value_optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate=lr)
     value_params = get_vars("main/q")
     with tf.control_dependencies([train_pi_op]):
         train_value_op = value_optimizer.minimize(value_loss, var_list=value_params)

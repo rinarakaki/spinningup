@@ -42,9 +42,9 @@ if __name__ == "__main__":
     sess = tf.Session()
 
     dim = 10
-    x = tf.placeholder(tf.float32, shape=(None, dim))
-    mu = tf.placeholder(tf.float32, shape=(None, dim))
-    log_std = tf.placeholder(tf.float32, shape=(dim,))
+    x = tf.compat.v1.placeholder(tf.float32, shape=(None, dim))
+    mu = tf.compat.v1.placeholder(tf.float32, shape=(None, dim))
+    log_std = tf.compat.v1.placeholder(tf.float32, shape=(dim,))
 
     your_gaussian_likelihood = gaussian_likelihood(x, mu, log_std)
     true_gaussian_likelihood = exercise1_1_soln.gaussian_likelihood(x, mu, log_std)
