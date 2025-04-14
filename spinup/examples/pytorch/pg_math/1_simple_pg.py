@@ -1,10 +1,10 @@
+import gym
+import numpy as np
 import torch
 import torch.nn as nn
+from gym.spaces import Box, Discrete
 from torch.distributions.categorical import Categorical
 from torch.optim import Adam
-import numpy as np
-import gym
-from gym.spaces import Discrete, Box
 
 
 def mlp(sizes, activation=nn.Tanh, output_activation=nn.Identity):
@@ -26,12 +26,8 @@ def train(
 ):
     # make environment, check spaces, get obs / act dims
     env = gym.make(env_name)
-    assert isinstance(env.observation_space, Box), (
-        "This example only works for envs with continuous state spaces."
-    )
-    assert isinstance(env.action_space, Discrete), (
-        "This example only works for envs with discrete action spaces."
-    )
+    assert isinstance(env.observation_space, Box), "This example only works for envs with continuous state spaces."
+    assert isinstance(env.action_space, Discrete), "This example only works for envs with discrete action spaces."
 
     obs_dim = env.observation_space.shape[0]
     n_acts = env.action_space.n

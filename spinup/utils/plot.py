@@ -1,10 +1,11 @@
-import seaborn as sns
-import pandas as pd
-import matplotlib.pyplot as plt
 import json
 import os
 import os.path as osp
+
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import seaborn as sns
 
 DIV_LINE_WIDTH = 50
 
@@ -48,7 +49,7 @@ def plot_data(
         **kwargs,
     )
     """
-    If you upgrade to any version of Seaborn greater than 0.8.1, switch from 
+    If you upgrade to any version of Seaborn greater than 0.8.1, switch from
     tsplot to lineplot replacing L29 with:
 
         sns.lineplot(data=data, x=xaxis, y=value, hue=condition, ci='sd', **kwargs)
@@ -60,7 +61,7 @@ def plot_data(
     #           borderaxespad=0., prop={'size': 13})
 
     """
-    For the version of the legend used in the Spinning Up benchmarking page, 
+    For the version of the legend used in the Spinning Up benchmarking page,
     swap L38 with:
 
     plt.legend(loc='upper center', ncol=6, handlelength=1,
@@ -108,9 +109,7 @@ def get_datasets(logdir, condition=None):
             except:
                 print("Could not read from %s" % os.path.join(root, "progress.txt"))
                 continue
-            performance = (
-                "AverageTestEpRet" if "AverageTestEpRet" in exp_data else "AverageEpRet"
-            )
+            performance = "AverageTestEpRet" if "AverageTestEpRet" in exp_data else "AverageEpRet"
             exp_data.insert(len(exp_data.columns), "Unit", unit)
             exp_data.insert(len(exp_data.columns), "Condition1", condition1)
             exp_data.insert(len(exp_data.columns), "Condition2", condition2)
@@ -156,9 +155,7 @@ def get_all_datasets(all_logdirs, legend=None, select=None, exclude=None):
     print("\n" + "=" * DIV_LINE_WIDTH)
 
     # Make sure the legend is compatible with the logdirs
-    assert not (legend) or (len(legend) == len(logdirs)), (
-        "Must give a legend title for each set of experiments."
-    )
+    assert not (legend) or (len(legend) == len(logdirs)), "Must give a legend title for each set of experiments."
 
     # Load data from logdirs
     data = []
@@ -186,9 +183,7 @@ def make_plots(
     data = get_all_datasets(all_logdirs, legend, select, exclude)
     values = values if isinstance(values, list) else [values]
     condition = "Condition2" if count else "Condition1"
-    estimator = getattr(
-        np, estimator
-    )  # choose what to show on main curve: mean? max? min?
+    estimator = getattr(np, estimator)  # choose what to show on main curve: mean? max? min?
     for value in values:
         plt.figure()
         plot_data(
@@ -218,49 +213,49 @@ def main():
     args = parser.parse_args()
     """
 
-    Args: 
-        logdir (strings): As many log directories (or prefixes to log 
-            directories, which the plotter will autocomplete internally) as 
+    Args:
+        logdir (strings): As many log directories (or prefixes to log
+            directories, which the plotter will autocomplete internally) as
             you'd like to plot from.
 
-        legend (strings): Optional way to specify legend for the plot. The 
+        legend (strings): Optional way to specify legend for the plot. The
             plotter legend will automatically use the ``exp_name`` from the
             config.json file, unless you tell it otherwise through this flag.
             This only works if you provide a name for each directory that
             will get plotted. (Note: this may not be the same as the number
             of logdir args you provide! Recall that the plotter looks for
-            autocompletes of the logdir args: there may be more than one 
-            match for a given logdir prefix, and you will need to provide a 
-            legend string for each one of those matches---unless you have 
-            removed some of them as candidates via selection or exclusion 
+            autocompletes of the logdir args: there may be more than one
+            match for a given logdir prefix, and you will need to provide a
+            legend string for each one of those matches---unless you have
+            removed some of them as candidates via selection or exclusion
             rules (below).)
 
         xaxis (string): Pick what column from data is used for the x-axis.
              Defaults to ``TotalEnvInteracts``.
 
-        value (strings): Pick what columns from data to graph on the y-axis. 
+        value (strings): Pick what columns from data to graph on the y-axis.
             Submitting multiple values will produce multiple graphs. Defaults
             to ``Performance``, which is not an actual output of any algorithm.
-            Instead, ``Performance`` refers to either ``AverageEpRet``, the 
+            Instead, ``Performance`` refers to either ``AverageEpRet``, the
             correct performance measure for the on-policy algorithms, or
-            ``AverageTestEpRet``, the correct performance measure for the 
-            off-policy algorithms. The plotter will automatically figure out 
-            which of ``AverageEpRet`` or ``AverageTestEpRet`` to report for 
+            ``AverageTestEpRet``, the correct performance measure for the
+            off-policy algorithms. The plotter will automatically figure out
+            which of ``AverageEpRet`` or ``AverageTestEpRet`` to report for
             each separate logdir.
 
         count: Optional flag. By default, the plotter shows y-values which
-            are averaged across all results that share an ``exp_name``, 
+            are averaged across all results that share an ``exp_name``,
             which is typically a set of identical experiments that only vary
-            in random seed. But if you'd like to see all of those curves 
+            in random seed. But if you'd like to see all of those curves
             separately, use the ``--count`` flag.
 
-        smooth (int): Smooth data by averaging it over a fixed window. This 
+        smooth (int): Smooth data by averaging it over a fixed window. This
             parameter says how wide the averaging window will be.
 
         select (strings): Optional selection rule: the plotter will only show
             curves from logdirs that contain all of these substrings.
 
-        exclude (strings): Optional exclusion rule: plotter will only show 
+        exclude (strings): Optional exclusion rule: plotter will only show
             curves from logdirs that do not contain these substrings.
 
     """

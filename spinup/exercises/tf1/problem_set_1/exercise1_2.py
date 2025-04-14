@@ -1,12 +1,13 @@
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
+
 from spinup.exercises.tf1.problem_set_1 import exercise1_1
 
 """
 
 Exercise 1.2: PPO Gaussian Policy
 
-Implement an MLP diagonal Gaussian policy for PPO. 
+Implement an MLP diagonal Gaussian policy for PPO.
 
 Log-likelihoods will be computed using your answer to Exercise 1.1,
 so make sure to complete that exercise before beginning this one.
@@ -42,9 +43,7 @@ def mlp(x, hidden_sizes=(32,), activation=tf.tanh, output_activation=None):
     pass
 
 
-def mlp_gaussian_policy(
-    x, a, hidden_sizes, activation, output_activation, action_space
-):
+def mlp_gaussian_policy(x, a, hidden_sizes, activation, output_activation, action_space):
     """
     Builds symbols to sample actions and compute log-probs of actions.
 
@@ -95,12 +94,14 @@ if __name__ == "__main__":
     Run this file to verify your solution.
     """
 
+    import os
+    import time
+
+    import gym
+    import pandas as pd
+
     from spinup import ppo_tf1 as ppo
     from spinup.exercises.common import print_result
-    import gym
-    import os
-    import pandas as pd
-    import time
 
     logdir = "/tmp/experiments/%i" % int(time.time())
     ppo(

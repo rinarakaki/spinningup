@@ -50,7 +50,6 @@ sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 # Finish imports
 from recommonmark.parser import CommonMarkParser
 
-
 source_parsers = {
     ".md": CommonMarkParser,
 }

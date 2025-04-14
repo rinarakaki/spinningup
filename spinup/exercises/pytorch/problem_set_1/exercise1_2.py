@@ -1,7 +1,7 @@
-import torch.nn as nn
 import numpy as np
-from spinup.exercises.pytorch.problem_set_1 import exercise1_1
-from spinup.exercises.pytorch.problem_set_1 import exercise1_2_auxiliary
+import torch.nn as nn
+
+from spinup.exercises.pytorch.problem_set_1 import exercise1_1, exercise1_2_auxiliary
 
 """
 
@@ -76,7 +76,7 @@ class MLPGaussianActor(nn.Module):
         Initialize an MLP Gaussian Actor by making a PyTorch module for computing the
         mean of the distribution given a batch of observations, and a log_std parameter.
 
-        Make log_std a PyTorch Parameter with the same shape as the action vector, 
+        Make log_std a PyTorch Parameter with the same shape as the action vector,
         independent of observations, initialized to [-0.5, -0.5, ..., -0.5].
         (Make sure it's trainable!)
         """
@@ -106,19 +106,19 @@ if __name__ == "__main__":
     Run this file to verify your solution.
     """
 
+    import os
+    import time
+    from functools import partial
+
+    import gym
+    import pandas as pd
+
     from spinup import ppo_pytorch as ppo
     from spinup.exercises.common import print_result
-    from functools import partial
-    import gym
-    import os
-    import pandas as pd
-    import time
 
     logdir = "/tmp/experiments/%i" % int(time.time())
 
-    ActorCritic = partial(
-        exercise1_2_auxiliary.ExerciseActorCritic, actor=MLPGaussianActor
-    )
+    ActorCritic = partial(exercise1_2_auxiliary.ExerciseActorCritic, actor=MLPGaussianActor)
 
     ppo(
         env_fn=lambda: gym.make("InvertedPendulum-v2"),

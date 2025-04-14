@@ -1,27 +1,29 @@
+import base64
+import json
+import os
+import os.path as osp
+import string
+import subprocess
+import sys
+import time
+import zlib
+from subprocess import CalledProcessError
+from textwrap import dedent
+
+import cloudpickle
+import numpy as np
+import psutil
+from tqdm import trange
+
 from spinup.user_config import (
     DEFAULT_DATA_DIR,
-    FORCE_DATESTAMP,
     DEFAULT_SHORTHAND,
+    FORCE_DATESTAMP,
     WAIT_BEFORE_LAUNCH,
 )
 from spinup.utils.logx import colorize
 from spinup.utils.mpi_tools import mpi_fork
 from spinup.utils.serialization_utils import convert_json
-import base64
-import cloudpickle
-import json
-import numpy as np
-import os
-import os.path as osp
-import psutil
-import string
-import subprocess
-from subprocess import CalledProcessError
-import sys
-from textwrap import dedent
-import time
-from tqdm import trange
-import zlib
 
 DIV_LINE_WIDTH = 80
 
@@ -89,9 +91,7 @@ def setup_logger_kwargs(exp_name, seed=None, data_dir=None, datestamp=False):
     return logger_kwargs
 
 
-def call_experiment(
-    exp_name, thunk, seed=0, num_cpu=1, data_dir=None, datestamp=False, **kwargs
-):
+def call_experiment(exp_name, thunk, seed=0, num_cpu=1, data_dir=None, datestamp=False, **kwargs):
     """
     Run a function (thunk) with hyperparameters (kwargs), plus configuration.
 
@@ -147,9 +147,7 @@ def call_experiment(
 
     # Set up logger output directory
     if "logger_kwargs" not in kwargs:
-        kwargs["logger_kwargs"] = setup_logger_kwargs(
-            exp_name, seed, data_dir, datestamp
-        )
+        kwargs["logger_kwargs"] = setup_logger_kwargs(exp_name, seed, data_dir, datestamp)
     else:
         print("Note: Call experiment is not handling logger_kwargs.\n")
 
@@ -185,9 +183,9 @@ def call_experiment(
 
             There appears to have been an error in your experiment.
 
-            Check the traceback above to see what actually went wrong. The 
+            Check the traceback above to see what actually went wrong. The
             traceback below, included for completeness (but probably not useful
-            for diagnosing the error), shows the stack leading up to the 
+            for diagnosing the error), shows the stack leading up to the
             experiment launch.
 
             """)
@@ -351,9 +349,7 @@ class ExperimentGrid:
                 inclusion of this parameter into the name.
         """
         assert isinstance(key, str), "Key must be a string."
-        assert shorthand is None or isinstance(shorthand, str), (
-            "Shorthand must be a string."
-        )
+        assert shorthand is None or isinstance(shorthand, str), "Shorthand must be a string."
         if not isinstance(vals, list):
             vals = [vals]
         if DEFAULT_SHORTHAND and shorthand is None:
@@ -490,9 +486,7 @@ class ExperimentGrid:
                     new_var[k0][sub_k] = v
                     unflatten_set.add(k0)
                 else:
-                    assert k not in new_var, (
-                        "You can't assign multiple values to the same key."
-                    )
+                    assert k not in new_var, "You can't assign multiple values to the same key."
                     new_var[k] = v
 
             # Make sure to fill out the nested dicts.
@@ -530,9 +524,7 @@ class ExperimentGrid:
         var_names = set([self.variant_name(var) for var in variants])
         var_names = sorted(list(var_names))
         line = "=" * DIV_LINE_WIDTH
-        preparing = colorize(
-            "Preparing to run the following experiments...", color="green", bold=True
-        )
+        preparing = colorize("Preparing to run the following experiments...", color="green", bold=True)
         joined_var_names = "\n".join(var_names)
         announcement = f"\n{preparing}\n\n{joined_var_names}\n\n{line}"
         print(announcement)

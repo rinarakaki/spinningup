@@ -1,10 +1,12 @@
-from copy import deepcopy
 import itertools
+import time
+from copy import deepcopy
+
+import gym
 import numpy as np
 import torch
 from torch.optim import Adam
-import gym
-import time
+
 import spinup.algos.pytorch.td3.core as core
 from spinup.algos.pytorch.td3.td3 import td3 as true_td3
 from spinup.utils.logx import EpochLogger
@@ -18,7 +20,7 @@ Implement the core computation graph for the TD3 algorithm.
 As starter code, you are given the entirety of the TD3 algorithm except
 for the computation graph. Find "YOUR CODE HERE" to begin.
 
-To clarify: you will not write an "actor_critic" function for this 
+To clarify: you will not write an "actor_critic" function for this
 exercise. But you will use one to build the graph for computing the
 TD3 updates.
 
@@ -424,9 +426,7 @@ if __name__ == "__main__":
 
     from spinup.utils.run_utils import setup_logger_kwargs
 
-    logger_kwargs = setup_logger_kwargs(
-        args.exp_name + "-" + args.env.lower(), args.seed
-    )
+    logger_kwargs = setup_logger_kwargs(args.exp_name + "-" + args.env.lower(), args.seed)
 
     all_kwargs = dict(
         env_fn=lambda: gym.make(args.env),

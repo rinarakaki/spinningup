@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from mpi4py import MPI
+
 from spinup.utils.mpi_tools import broadcast
 
 
@@ -9,9 +10,7 @@ def flat_concat(xs):
 
 
 def assign_params_from_flat(x, params):
-    flat_size = lambda p: int(
-        np.prod(p.shape.as_list())
-    )  # the 'int' is important for scalars
+    flat_size = lambda p: int(np.prod(p.shape.as_list()))  # the 'int' is important for scalars
     splits = tf.split(x, [flat_size(p) for p in params])
     new_params = [tf.reshape(p_new, p.shape) for p, p_new in zip(params, splits)]
     return tf.group([tf.assign(p, p_new) for p, p_new in zip(params, new_params)])
@@ -33,7 +32,7 @@ def sync_all_params():
     return sync_params(tf.global_variables())
 
 
-class MpiAdamOptimizer(tf.train.AdamOptimizer):
+class MpiAdamOptimizer(tf.compat.v1.train.AdamOptimizer):
     """
     Adam optimizer that averages gradients across MPI processes.
 
@@ -42,12 +41,12 @@ class MpiAdamOptimizer(tf.train.AdamOptimizer):
     the base `AdamOptimizer`_.
 
     .. _`MpiAdamOptimizer`: https://github.com/openai/baselines/blob/master/baselines/common/mpi_adam_optimizer.py
-    .. _`AdamOptimizer`: https://www.tensorflow.org/api_docs/python/tf/train/AdamOptimizer
+    .. _`AdamOptimizer`: https://www.tensorflow.org/api_docs/python/tf.compat.v1.train.AdamOptimizer
     """
 
     def __init__(self, **kwargs):
         self.comm = MPI.COMM_WORLD
-        tf.train.AdamOptimizer.__init__(self, **kwargs)
+        tf.compat.v1.train.AdamOptimizer.__init__(self, **kwargs)
 
     def compute_gradients(self, loss, var_list, **kwargs):
         """
@@ -70,9 +69,7 @@ class MpiAdamOptimizer(tf.train.AdamOptimizer):
         avg_flat_grad = tf.py_func(_collect_grads, [flat_grad], tf.float32)
         avg_flat_grad.set_shape(flat_grad.shape)
         avg_grads = tf.split(avg_flat_grad, sizes, axis=0)
-        avg_grads_and_vars = [
-            (tf.reshape(g, v.shape), v) for g, (_, v) in zip(avg_grads, grads_and_vars)
-        ]
+        avg_grads_and_vars = [(tf.reshape(g, v.shape), v) for g, (_, v) in zip(avg_grads, grads_and_vars)]
 
         return avg_grads_and_vars
 

@@ -1,14 +1,14 @@
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
 
 """
 
 Exercise 1.1: Diagonal Gaussian Likelihood
 
-Write a function which takes in Tensorflow symbols for the means and 
-log stds of a batch of diagonal Gaussian distributions, along with a 
-Tensorflow placeholder for (previously-generated) samples from those 
-distributions, and returns a Tensorflow symbol for computing the log 
+Write a function which takes in Tensorflow symbols for the means and
+log stds of a batch of diagonal Gaussian distributions, along with a
+Tensorflow placeholder for (previously-generated) samples from those
+distributions, and returns a Tensorflow symbol for computing the log
 likelihoods of those samples.
 
 """
@@ -36,15 +36,15 @@ if __name__ == "__main__":
     """
     Run this file to verify your solution.
     """
-    from spinup.exercises.tf1.problem_set_1_solutions import exercise1_1_soln
     from spinup.exercises.common import print_result
+    from spinup.exercises.tf1.problem_set_1_solutions import exercise1_1_soln
 
     sess = tf.Session()
 
     dim = 10
-    x = tf.placeholder(tf.float32, shape=(None, dim))
-    mu = tf.placeholder(tf.float32, shape=(None, dim))
-    log_std = tf.placeholder(tf.float32, shape=(dim,))
+    x = tf.compat.v1.placeholder(tf.float32, shape=(None, dim))
+    mu = tf.compat.v1.placeholder(tf.float32, shape=(None, dim))
+    log_std = tf.compat.v1.placeholder(tf.float32, shape=(dim,))
 
     your_gaussian_likelihood = gaussian_likelihood(x, mu, log_std)
     true_gaussian_likelihood = exercise1_1_soln.gaussian_likelihood(x, mu, log_std)
@@ -56,9 +56,7 @@ if __name__ == "__main__":
         log_std: np.random.rand(dim),
     }
 
-    your_result, true_result = sess.run(
-        [your_gaussian_likelihood, true_gaussian_likelihood], feed_dict=feed_dict
-    )
+    your_result, true_result = sess.run([your_gaussian_likelihood, true_gaussian_likelihood], feed_dict=feed_dict)
 
     correct = np.allclose(your_result, true_result)
     print_result(correct)

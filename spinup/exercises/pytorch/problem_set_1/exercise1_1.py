@@ -1,14 +1,14 @@
-import torch
 import numpy as np
+import torch
 
 """
 
 Exercise 1.1: Diagonal Gaussian Likelihood
 
-Write a function that takes in PyTorch Tensors for the means and 
-log stds of a batch of diagonal Gaussian distributions, along with a 
-PyTorch Tensor for (previously-generated) samples from those 
-distributions, and returns a Tensor containing the log 
+Write a function that takes in PyTorch Tensors for the means and
+log stds of a batch of diagonal Gaussian distributions, along with a
+PyTorch Tensor for (previously-generated) samples from those
+distributions, and returns a Tensor containing the log
 likelihoods of those samples.
 
 """
@@ -36,8 +36,8 @@ if __name__ == "__main__":
     """
     Run this file to verify your solution.
     """
-    from spinup.exercises.pytorch.problem_set_1_solutions import exercise1_1_soln
     from spinup.exercises.common import print_result
+    from spinup.exercises.pytorch.problem_set_1_solutions import exercise1_1_soln
 
     batch_size = 32
     dim = 10

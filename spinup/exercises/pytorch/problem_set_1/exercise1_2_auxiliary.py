@@ -3,8 +3,8 @@ import torch.nn as nn
 
 """
 
-Auxiliary code for Exercise 1.2. No part of the exercise requires you to 
-look into or modify this file (and since it contains an mlp function, 
+Auxiliary code for Exercise 1.2. No part of the exercise requires you to
+look into or modify this file (and since it contains an mlp function,
 it has spoilers for the answer). Removed from the main file to avoid
 cluttering it up.
 
@@ -28,9 +28,7 @@ class MLPCritic(nn.Module):
         self.v_net = mlp([obs_dim] + list(hidden_sizes) + [1], activation)
 
     def forward(self, obs):
-        return torch.squeeze(
-            self.v_net(obs), -1
-        )  # Critical to ensure v has right shape.
+        return torch.squeeze(self.v_net(obs), -1)  # Critical to ensure v has right shape.
 
 
 class ExerciseActorCritic(nn.Module):

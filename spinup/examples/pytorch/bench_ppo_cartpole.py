@@ -1,6 +1,7 @@
-from spinup.utils.run_utils import ExperimentGrid
-from spinup import ppo_pytorch
 import torch
+
+from spinup import ppo_pytorch
+from spinup.utils.run_utils import ExperimentGrid
 
 if __name__ == "__main__":
     import argparse

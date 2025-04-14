@@ -1,6 +1,8 @@
 **Status:** Maintenance (expect bug fixes and minor updates)
 
-Welcome to Spinning Up in Deep RL! 
+[![CI](https://github.com/openai/spinningup/actions/workflows/ci.yml/badge.svg)](https://github.com/openai/spinningup/actions/workflows/ci.yml)
+
+Welcome to Spinning Up in Deep RL!
 ==================================
 
 This is an educational resource produced by OpenAI that makes it easier to learn about deep reinforcement learning (deep RL).

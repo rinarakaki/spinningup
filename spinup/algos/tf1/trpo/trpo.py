@@ -1,18 +1,19 @@
+import time
+
+import gym
 import numpy as np
 import tensorflow as tf
-import gym
-import time
+
 import spinup.algos.tf1.trpo.core as core
 from spinup.utils.logx import EpochLogger
 from spinup.utils.mpi_tf import MpiAdamOptimizer, sync_all_params
 from spinup.utils.mpi_tools import (
-    mpi_fork,
     mpi_avg,
-    proc_id,
+    mpi_fork,
     mpi_statistics_scalar,
     num_procs,
+    proc_id,
 )
-
 
 EPS = 1e-8
 
@@ -32,10 +33,7 @@ class GAEBuffer:
         self.ret_buf = np.zeros(size, dtype=np.float32)
         self.val_buf = np.zeros(size, dtype=np.float32)
         self.logp_buf = np.zeros(size, dtype=np.float32)
-        self.info_bufs = {
-            k: np.zeros([size] + list(v), dtype=np.float32)
-            for k, v in info_shapes.items()
-        }
+        self.info_bufs = {k: np.zeros([size] + list(v), dtype=np.float32) for k, v in info_shapes.items()}
         self.sorted_info_keys = core.keys_as_sorted_list(self.info_bufs)
         self.gamma, self.lam = gamma, lam
         self.ptr, self.path_start_idx, self.max_size = 0, 0, size
@@ -230,7 +228,7 @@ def trpo(
     logger.save_config(locals())
 
     seed += 10000 * proc_id()
-    tf.set_random_seed(seed)
+    tf.compat.v1.set_random_seed(seed)
     np.random.seed(seed)
 
     env = env_fn()
@@ -248,9 +246,7 @@ def trpo(
     pi, logp, logp_pi, info, info_phs, d_kl, v = actor_critic(x_ph, a_ph, **ac_kwargs)
 
     # Need all placeholders in *this* order later (to zip with data from buffer)
-    all_phs = [x_ph, a_ph, adv_ph, ret_ph, logp_old_ph] + core.values_as_sorted_list(
-        info_phs
-    )
+    all_phs = [x_ph, a_ph, adv_ph, ret_ph, logp_old_ph] + core.values_as_sorted_list(info_phs)
 
     # Every step, get: action, value, logprob, & info for pdist (for computing kl div)
     get_action_ops = [pi, v, logp_pi] + core.values_as_sorted_list(info)

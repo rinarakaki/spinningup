@@ -1,6 +1,6 @@
+import numpy as np
 import torch
 import torch.nn as nn
-import numpy as np
 
 EPS = 1e-8
 
@@ -14,9 +14,7 @@ def mlp(sizes, activation, output_activation=nn.Identity):
 
 
 def gaussian_likelihood(x, mu, log_std):
-    pre_sum = -0.5 * (
-        ((x - mu) / (torch.exp(log_std) + EPS)) ** 2 + 2 * log_std + np.log(2 * np.pi)
-    )
+    pre_sum = -0.5 * (((x - mu) / (torch.exp(log_std) + EPS)) ** 2 + 2 * log_std + np.log(2 * np.pi))
     return pre_sum.sum(axis=-1)
 
 
